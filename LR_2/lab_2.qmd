@@ -27,11 +27,11 @@ format:
 
 ## Шаги
 
-1. Получение трафика 
+1\. Получение трафика 
 
 С помощью Wireshark было захвачено 101 МБ трафика (файл Trafik.pcapng).
 
-2. Перевод трафика в метаинформацию 
+2\. Перевод трафика в метаинформацию 
 
 С помощью утилиты zeek была получена метаинформация о трафике (файл dns.log).
 
@@ -39,7 +39,7 @@ format:
 /opt/zeek/bin/zeek -C -r /home/shpulya/Trafik.pcapng
 ```
 
-3. Анализ трафика
+3\. Анализ трафика
 
 Для анализа трафика необходимо получить список нежелательных доменов.
 
@@ -51,7 +51,7 @@ curl https://winhelp2002.mvps.org/hosts.txt -o hosts
 
 ```{python}
 bad_hosts = []
-with open('hosts1.txt') as file:
+with open('hosts') as file:
     for line in file.readlines()[27:]:
         if line[0] == '#':
             continue
@@ -72,7 +72,7 @@ with open('dns.log') as file:
             continue
 ```
 
-4. Определение нежелательного трафика
+4\. Определение нежелательного трафика
 
 Проанализируем полученный трафик:
 
