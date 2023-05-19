@@ -1,45 +1,6 @@
----
-title: "Развертывание системы мониторинга ELK Stack (Opensearch)"
-author: "Поспелова Ульяна БИСО-03-20"
-engine: knitr
-format:
-    md:
-        output-file: "README.md"
----
+version: "3"
 
-## Цель работы
-
-1. Освоить базовые подходы централизованного сбора и накопления информации
-
-2. Освоить современные инструменты развертывания контейнирозованных приложений
-
-3. Закрепить знания о современных сетевых протоколах прикладного уровня
-
-## Ход выполнения практической работы
-
-### Задание 1. Развернуть систему мониторинга на базе ElasticSearch
-
-1\. Настройка
-
-    Для работы ElasticSearch требуется увеличить размер виртуальной памяти системы:
-
-```()
-sudo sysctl -w vm.max_map_count=262144
-```
-
-![All text](pic1.png)
-
-Далее следуем инструкции по ссылке:
-
-https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
-
-2\. Создание docker-compose.yml
-
-Формируем файлы с конфигурациями, следуя инструкции по ссылке:
-https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
-
-2.1\. Создание сервиса setup:
-```
+services:
   setup:
     image: elastic/elasticsearch:${STACK_VERSION}
     volumes:
@@ -100,11 +61,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
       interval: 1s
       timeout: 5s
       retries: 120
-```
 
-2.2\. Создание сервиса главной ноды es01:
-
-```
   es01:
     depends_on:
       setup:
@@ -148,11 +105,6 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
       timeout: 10s
       retries: 120
 
-```
-
-2.3\. Создание сервиса графической панели управления kibana:
-
-```
   kibana:
     depends_on:
       es01:
@@ -180,26 +132,24 @@ https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
       timeout: 10s
       retries: 120
 
-```
-
-2.4\. Пропишем используемые Docker volume:
-
-```
-volumes:
-  certs:
-    driver: local
-  esdata01:
-    driver: local
-  kibanadata:
-    driver: local
-```
-
-3\. Добавление средства сбора сетевого трафика Packetbeat
-
-3.1\. Создание сервиса для запуска Packetbeat:
-
-```
-      packetbeat:
+  filebeat:
+    depends_on:
+       es01:
+        condition: service_healthy
+    image: elastic/filebeat:${STACK_VERSION}
+    container_name: filebeat
+    command: filebeat -e -strict.perms=false
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./logs/:/var/log/
+      - certs:/usr/share/elasticsearch/config/certs
+    environment:
+      - ELASTICSEARCH_HOSTS=https://es01:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
+  
+  packetbeat:
     depends_on:
       es01:
         condition: service_healthy
@@ -219,73 +169,11 @@ volumes:
       - ELASTICSEARCH_USERNAME=elastic
       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
-```
 
-3.2\. Файл конфигурации packetbeat.yml:
-
-```
-    packetbeat.interfaces.device: any
-
-    packetbeat.flows:
-      timeout: 30s
-      period: 10s
-
-    packetbeat.protocols.dns:
-      ports: [53]
-      include_authorities: true
-      include_additionals: true
-
-    packetbeat.protocols.http:
-      ports: [80, 5601, 9200, 8080, 8081, 5000, 8002]
-
-    packetbeat.protocols.memcache:
-      ports: [11211]
-
-    packetbeat.protocols.mysql:
-      ports: [3306]
-
-    packetbeat.protocols.pgsql:
-      ports: [5432]
-
-    packetbeat.protocols.redis:
-      ports: [6379]
-
-    packetbeat.protocols.thrift:
-      ports: [9090]
-
-    packetbeat.protocols.mongodb:
-      ports: [27017]
-
-    packetbeat.protocols.cassandra:
-      ports: [9042]
-
-    processors:
-    - add_cloud_metadata: ~
-
-    output.elasticsearch:
-      hosts: '${ELASTICSEARCH_HOSTS:elasticsearch:9200}'
-      username: '${ELASTICSEARCH_USERNAME:}'
-      password: '${ELASTICSEARCH_PASSWORD:}'
-      ssl:
-        certificate_authorities: "/usr/share/elasticsearch/config/certs/ca/ca.crt"
-```
-
-4\. Переходим на `localhost:5061` и авторизируемся
-
-![All text](pic2.png)
-
-5\. Проверям, что установленны все средства для сбора информации из файлов журналов и сбора аналитики трафика
-
-![All text](pic4.png)
-
-6\. Создаем новый data view для packetbeat
-
-![All text](pic3.png)
-
-## Оценка результата
-
-Была развёрнута система ElasticSearch и настроена система сбора трафика и лог-файлов.
-
-## Вывод
-
-В результате работы была освоена система контейнеризации приложений Docker, работа с Docker-compose и освоена система централизованного сбора и накопления информации ElasticSearch.
+volumes:
+  certs:
+    driver: local
+  esdata01:
+    driver: local
+  kibanadata:
+    driver: local
