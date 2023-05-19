@@ -15,17 +15,16 @@ mind-карты
 2.  Была использована программа Freeplane
 
 3.  Результат 
-
-![mind-карта](pic1.png) 
-![mind-карта](pic2.png)
-![mind-карта](pic3.png) 
-![mind-карта](pic4.png)
-![mind-карта](pic5.png) 
-![mind-карта](pic6.png)
-![mind-карта](pic7.png) 
-![mind-карта](pic8.png)
-![mind-карта](pic9.png) 
-![mind-карта](pic10.png)
+    ![mind-карта](pic1.png) 
+    ![mind-карта](pic2.png)
+    ![mind-карта](pic3.png) 
+    ![mind-карта](pic4.png)
+    ![mind-карта](pic5.png) 
+    ![mind-карта](pic6.png)
+    ![mind-карта](pic7.png) 
+    ![mind-карта](pic8.png)
+    ![mind-карта](pic9.png) 
+    ![mind-карта](pic10.png)
 
 ## Оценка результата
 
