@@ -15,6 +15,7 @@ mind-карты
 2.  Была использована программа Freeplane
 
 3.  Результат 
+
 ![mind-карта](pic1.png) 
 ![mind-карта](pic2.png)
 ![mind-карта](pic3.png) 
