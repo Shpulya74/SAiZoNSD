@@ -1,11 +1,11 @@
 bad_hosts = []
-with open('C:\VUZ\TH\hosts1.txt') as file:
+with open('hosts') as file:
     for line in file.readlines()[27:]:
         if line[0] == '#':
             continue
         bad_hosts.append(line.split()[1])
 hosts = []
-with open('C:\VUZ\TH\dns.log') as file:
+with open('dns.log') as file:
     for line in file.readlines():
         if line[0] == '#':
             continue
