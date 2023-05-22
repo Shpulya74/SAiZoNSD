@@ -54,7 +54,7 @@ services:
         until curl -s --cacert config/certs/ca/ca.crt https://es01:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
         echo "Setting kibana_system password";
         until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
-        echo "All done!";
+        echo "Successfull!";
       '
     healthcheck:
       test: ["CMD-SHELL", "[ -f config/certs/es01/es01.crt ]"]
@@ -76,7 +76,6 @@ services:
       - node.name=es01
       - cluster.name=${CLUSTER_NAME}
       - cluster.initial_master_nodes=es01
-      #- discovery.seed_hosts=es02,es03
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - bootstrap.memory_lock=true
       - xpack.security.enabled=true
@@ -161,7 +160,7 @@ services:
       - NET_ADMIN
     command: packetbeat -e -strict.perms=false
     volumes:
-      - /mnt/c/proba/docker-compo1/packetbeat.yml:/usr/share/packetbeat/packetbeat.yml
+      - ./packetbeat.yml:/usr/share/packetbeat/packetbeat.yml
       - certs:/usr/share/elasticsearch/config/certs
       - /run/docker.sock:/run/docker.sock
     environment:
@@ -169,6 +168,16 @@ services:
       - ELASTICSEARCH_USERNAME=elastic
       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
+  
+  nginx:
+    container_name: nginx
+    image: nginx:stable-alpine3.17
+    ports: ['80:80']
+    expose:
+      - '80'
+    command: nginx -g 'daemon off;'
+    volumes:
+      - ./logs/nginx/:/var/log/nginx/
 
 volumes:
   certs:
