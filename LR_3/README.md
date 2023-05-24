@@ -25,7 +25,7 @@
 2\. Создание docker-compose.yml
 
 Следуем инструкции по приведённой ниже ссылке для кормирования файлов
-docker-compose.yml и file.env :
+docker-compose.yml и .env :
 https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
 
 3\. Создание filebeat.yml и packetbeat.yml
