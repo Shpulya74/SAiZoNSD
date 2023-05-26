@@ -1,0 +1,10 @@
+---
+title: "Создание сайта"
+author: "Поспелова Ульяна БИСО-03-20"
+engine: knitr
+format:
+    md:
+        output-file: "README.md"
+---
+
+https://shpulya74.github.io/Site_lab7/
